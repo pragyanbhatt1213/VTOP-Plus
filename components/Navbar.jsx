@@ -59,7 +59,7 @@ export default function Navbar() {
             </a>
           ))}
           <a
-            href="https://github.com/pragyanbhatt1213/VTOP-Plus/blob/main/apk/VTOP%20Plus.apk"
+            href="https://github.com/pragyanbhatt1213/VTOP-Plus/releases/download/version/VTOP.Plus.apk"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setOpen(false)}

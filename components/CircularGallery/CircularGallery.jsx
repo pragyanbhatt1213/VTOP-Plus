@@ -168,8 +168,8 @@ export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
       // Scroll interaction
       function onWheel(e) {
         e.preventDefault();
-        // Slowed down wheel speed to 0.15 for professional elegance
-        scroll.target += e.deltaY * 0.15;
+        // Ultra-slow wheel speed for maximum precision
+        scroll.target += e.deltaY * 0.005;
       }
 
       function onPointerDown(e) {
@@ -182,8 +182,8 @@ export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
       function onPointerMove(e) {
         if (!dragging) return;
         const x = e.clientX || e.touches?.[0]?.clientX || 0;
-        // Slowed down drag speed to 0.4
-        scroll.target = dragStart - (x - startX) * 0.4;
+        // Ultra-slow drag speed
+        scroll.target = dragStart - (x - startX) * 0.03;
       }
 
       function onPointerUp() {
@@ -207,8 +207,8 @@ export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
         if (!alive) return;
         frames++;
 
-        // Smooth scroll implementation with elegant easing (0.05 vs old 0.08)
-        scroll.current += (scroll.target - scroll.current) * 0.05;
+        // Smooth scroll implementation with ultra-elegant easing (0.015)
+        scroll.current += (scroll.target - scroll.current) * 0.015;
 
         const { width } = box.getBoundingClientRect();
         const totalWidth = items.length * (planeWidth + spacing);

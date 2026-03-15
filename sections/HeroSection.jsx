@@ -73,7 +73,9 @@ export default function HeroSection() {
 
           <div className="flex flex-wrap gap-4">
             <a
-              href="#download"
+              href="https://github.com/pragyanbhatt1213/VTOP-Plus/blob/main/apk/VTOP%20Plus.apk"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent-cyan text-bg-deep font-semibold text-sm
                          hover:shadow-[0_0_30px_rgba(30,200,255,0.25)] hover:scale-[1.03] transition-all duration-300"
             >

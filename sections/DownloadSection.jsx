@@ -37,7 +37,9 @@ export default function DownloadSection() {
           </p>
 
           <motion.a
-            href="#"
+            href="https://github.com/pragyanbhatt1213/VTOP-Plus/blob/main/apk/VTOP%20Plus.apk"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-3 px-8 sm:px-12 py-4 rounded-2xl
                        bg-gradient-to-r from-accent-cyan via-accent-cyan to-accent-teal
                        text-dark font-bold text-sm

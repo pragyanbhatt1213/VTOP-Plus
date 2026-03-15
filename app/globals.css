@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── DESIGN TOKENS ── */
+:root {
+  --bg-deep: #081426;
+  --bg-mid: #0C1F36;
+  --bg-light: #0E2A47;
+  --accent-cyan: #1EC8FF;
+  --accent-teal: #2EE6A6;
+  --text-primary: #E8F0FF;
+  --text-secondary: #9FB3C8;
+  --text-muted: #6F859C;
+  --card-border: rgba(30, 200, 255, 0.35);
+}
+
+/* ── GLOBAL RESETS ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 40%, var(--bg-light) 100%);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(30, 200, 255, 0.2);
+  color: #fff;
+}
+
+/* ── CURSOR GLOW ── */
+#cursor-glow {
+  position: fixed;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30, 200, 255, 0.07) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+  will-change: left, top;
+}
+
+/* ── BACKGROUND CANVAS ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── RADIAL GLOW BLOBS ── */
+.radial-glow {
+  position: fixed; border-radius: 50%;
+  pointer-events: none; z-index: 0;
+  filter: blur(80px);
+}
+.radial-glow.g1 {
+  width: 600px; height: 600px;
+  background: rgba(30, 200, 255, 0.04);
+  top: -100px; left: 20%;
+}
+.radial-glow.g2 {
+  width: 500px; height: 500px;
+  background: rgba(46, 230, 166, 0.03);
+  top: 50%; right: -100px;
+}
+.radial-glow.g3 {
+  width: 400px; height: 400px;
+  background: rgba(30, 200, 255, 0.025);
+  bottom: 10%; left: -50px;
+}
+
+/* ── SECTION DIVIDER ── */
+.section-divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(30, 200, 255, 0.12) 30%, rgba(46, 230, 166, 0.06) 70%, transparent);
+  margin: 0 auto;
+}
+
+/* ── GLASS CARD UTILITY ── */
+.glass-card {
+  background: linear-gradient(135deg, rgba(12, 31, 54, 0.7), rgba(8, 20, 38, 0.5));
+  border: 1px solid rgba(30, 200, 255, 0.12);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s,
+              box-shadow 0.35s;
+}
+.glass-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(30, 200, 255, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+              0 0 30px rgba(30, 200, 255, 0.04);
+}
+
+/* ── PHONE MOCKUP ── */
+.phone-frame {
+  width: 290px; height: 600px;
+  background: linear-gradient(160deg, #0f1a2e 0%, #051219 50%, #0a1a2e 100%);
+  border: 3px solid rgba(30, 200, 255, 0.5);
+  border-radius: 44px; padding: 12px;
+  position: relative; overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(30, 200, 255, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.5),
+    0 20px 40px rgba(0, 0, 0, 0.6),
+    0 40px 80px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(30, 200, 255, 0.15),
+    0 0 160px rgba(30, 200, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+/* Dynamic island */
+.phone-frame::before {
+  content: '';
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  width: 90px; height: 26px;
+  background: #050c18;
+  border-radius: 20px; z-index: 10;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
+}
+/* Side button */
+.phone-frame::after {
+  content: '';
+  position: absolute; top: 120px; right: -2px;
+  width: 3px; height: 30px;
+  background: rgba(30, 200, 255, 0.25);
+  border-radius: 2px 0 0 2px;
+}
+.phone-frame img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 32px;
+  display: block;
+  position: relative; z-index: 1;
+  background: linear-gradient(135deg, #0a1525 0%, #0d2438 100%);
+}
+
+/* ── GALLERY STYLING ── */
+#preview {
+  position: relative;
+  overflow: visible;
+}
+
+#preview::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95%;
+  max-width: 1400px;
+  height: 600px;
+  background: radial-gradient(ellipse 60% 45% at 50% 45%, rgba(30, 200, 255, 0.15) 0%, rgba(30, 150, 200, 0.05) 40%, transparent 70%);
+  pointer-events: none;
+  border-radius: 200px;
+  filter: blur(40px);
+  z-index: 1;
+}
+
+#preview::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cg-container {
+  position: relative !important;
+  z-index: 2;
+}
+
+/* ── SHIMMER TEXT ── */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--accent-cyan) 0%,
+    #5bf0ff 25%,
+    var(--accent-cyan) 50%,
+    var(--accent-teal) 75%,
+    var(--accent-cyan) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ── GRADIENT TEXT ── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 200, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 200, 255, 0.3);
+}
+
+/* ── RESPONSIVE PHONE ── */
+@media (max-width: 1024px) {
+  .phone-frame { width: 250px; height: 520px; border-radius: 38px; border-width: 2.5px; }
+  .phone-frame::before { width: 76px; height: 22px; top: 12px; }
+  .phone-frame img { border-radius: 28px; }
+}
+@media (max-width: 640px) {
+  .phone-frame { width: 230px; height: 480px; border-radius: 36px; border-width: 2px; }
+  .phone-frame::before { width: 72px; height: 20px; top: 10px; }
+  .phone-frame img { border-radius: 26px; }
+}

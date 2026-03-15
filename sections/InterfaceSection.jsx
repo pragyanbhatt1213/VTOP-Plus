@@ -9,27 +9,26 @@ const CircularGallery = dynamic(
 );
 
 const items = [
-  { image: '/screenshots/home.png',              text: 'Dashboard' },
-  { image: '/screenshots/attendance.png',         text: 'Attendance' },
-  { image: '/screenshots/attendence detail.png',  text: 'Detail View' },
-  { image: '/screenshots/timetable.png',          text: 'Timetable' },
-  { image: '/screenshots/exam.png',               text: 'Exam Schedule' },
-  { image: '/screenshots/setting.png',            text: 'Settings' },
+  { image: '/screenshots/home.png', text: 'Dashboard' },
+  { image: '/screenshots/attendance.png', text: 'Attendance Tracking' },
+  { image: '/screenshots/attendence detail.png', text: 'Details' },
+  { image: '/screenshots/timetable.png', text: 'Timetable View' },
+  { image: '/screenshots/exam.png', text: 'Exam Schedule' },
+  { image: '/screenshots/setting.png', text: 'Settings' },
 ];
 
 export default function InterfaceSection() {
   return (
-    <section id="preview" className="py-32 px-6">
-
+    <section id="preview" className="py-32 sm:py-40 lg:py-56 px-6">
       {/* Header */}
-      <div className="max-w-6xl mx-auto text-center mb-20">
+      <div className="max-w-5xl mx-auto text-center mb-20 sm:mb-28">
         <div className="inline-flex items-center gap-3 text-accent-cyan text-xs font-mono tracking-[0.2em] uppercase mb-4">
           <span className="w-8 h-px bg-accent-cyan/40" />
-          Interface
+          Interface Preview
           <span className="w-8 h-px bg-accent-cyan/40" />
         </div>
 
-        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
           <Shuffle
             text="Explore the Interface"
             shuffleDirection="right"
@@ -42,24 +41,26 @@ export default function InterfaceSection() {
           />
         </h2>
 
-        <p className="text-txt-secondary text-sm max-w-md mx-auto">
-          Drag or scroll to explore. Clean screens designed for how students actually use their data.
+        <p className="text-txt-secondary text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          Clean, purpose-built screens designed around how students actually use their academic data. Every interaction optimized for speed and clarity.
         </p>
       </div>
 
-      {/* Gallery */}
-      <div className="h-[600px] sm:h-[700px] lg:h-[750px] relative flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-b from-accent-cyan/5 via-transparent to-accent-teal/5 rounded-2xl pointer-events-none" />
-        <CircularGallery
-          items={items}
-          bend={0.8}
-          textColor="#1ec8ff"
-          borderRadius={0.08}
-          scrollSpeed={2.5}
-          scrollEase={0.06}
-        />
+      {/* Gallery Container */}
+      <div style={{ height: '650px', position: 'relative', overflow: 'hidden' }}>
+        {/* Background gradient backdrop */}
+        <div className="absolute inset-0 bg-gradient-to-b from-accent-cyan/5 via-transparent to-accent-teal/5 rounded-3xl pointer-events-none" />
+
+        {/* Gallery */}
+        <CircularGallery items={items} borderRadius={0.05} />
       </div>
 
+      {/* Helper text */}
+      <div className="text-center mt-16">
+        <p className="text-txt-muted text-sm font-mono tracking-widest uppercase opacity-60">
+          Drag or scroll to explore
+        </p>
+      </div>
     </section>
   );
 }

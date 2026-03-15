@@ -12,7 +12,7 @@
   inset: 0;
   width: 100% !important;
   height: 100% !important;
-  filter: drop-shadow(0 50px 100px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 60px rgba(30, 200, 255, 0.12));
+  display: block;
 }
 
 .cg-label {
@@ -21,13 +21,25 @@
   left: 0;
   pointer-events: none;
   font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.35s ease;
-  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 20px rgba(30, 200, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   color: #1ec8ff;
+  padding: 8px 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 200, 255, 0.12),
+    rgba(46, 230, 166, 0.06)
+  );
+  border: 1px solid rgba(30, 200, 255, 0.28);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 16px rgba(30, 200, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }

@@ -5,7 +5,7 @@ import { Shield } from 'lucide-react';
 
 export default function PrivacySection() {
   return (
-    <section id="privacy" className="py-24 px-6">
+    <section id="privacy" className="py-32 sm:py-40 lg:py-56 px-6">
       <div className="max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

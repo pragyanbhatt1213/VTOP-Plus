@@ -18,6 +18,9 @@ export const metadata = {
   description:
     'A modern mobile app for VIT Bhopal students. Access attendance, timetable, exams, and more — faster and cleaner than the official portal.',
   icons: { icon: '/icon.png' },
+};
+
+export const viewport = {
   themeColor: '#081426',
 };
 

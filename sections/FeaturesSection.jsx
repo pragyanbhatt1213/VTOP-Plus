@@ -28,7 +28,7 @@ const cardV = {
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="py-28 px-6">
+    <section id="features" className="py-32 sm:py-40 lg:py-56 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-16">

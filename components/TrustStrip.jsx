@@ -1,35 +1,34 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Lock, Shield, Zap } from 'lucide-react';
+import { Shield, Lock, Zap } from 'lucide-react';
 
-export default function TrustStrip({ variant = 'default' }) {
-  const items = [
-    { icon: Lock, label: 'End-to-End Secure' },
-    { icon: Shield, label: 'No Data Collection' },
-    { icon: Zap, label: 'Direct VTOP Connection' },
-  ];
+const trustItems = [
+  { icon: Shield, label: 'End-to-End Secure' },
+  { icon: Lock, label: 'No Data Collection' },
+  { icon: Zap, label: 'Direct VTOP Connection' },
+];
 
-  const isCompact = variant === 'compact';
-
+export default function TrustStrip() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: -12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className={`flex flex-wrap gap-2 sm:gap-3 justify-center ${
-        isCompact ? 'mb-6' : 'mb-10'
-      }`}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="flex flex-wrap gap-3 justify-center mb-8"
     >
-      {items.map((item, idx) => (
+      {trustItems.map((item, idx) => (
         <motion.div
           key={idx}
           whileHover={{ scale: 1.05 }}
-          className="trust-pill"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                     bg-gradient-to-r from-accent-cyan/10 to-accent-teal/5
+                     border border-accent-cyan/30
+                     opacity-90 hover:opacity-100 transition-opacity duration-300"
         >
-          <item.icon size={isCompact ? 14 : 16} strokeWidth={2} />
-          <span className={isCompact ? 'text-xs' : 'text-sm'}>
+          <item.icon size={14} strokeWidth={2} className="text-accent-cyan" />
+          <span className="text-xs font-medium text-txt-primary whitespace-nowrap">
             {item.label}
           </span>
         </motion.div>

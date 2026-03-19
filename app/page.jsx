@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/sections/HeroSection';
-import ProblemSection from '@/sections/ProblemSection';
 import FeaturesSection from '@/sections/FeaturesSection';
 import InterfaceSection from '@/sections/InterfaceSection';
 import PrivacySection from '@/sections/PrivacySection';
@@ -83,8 +82,6 @@ export default function Home() {
         <HeroSection />
         <div className="section-divider" />
         <PrivacySection />
-        <div className="section-divider" />
-        <ProblemSection />
         <div className="section-divider" />
         <FeaturesSection />
         <div className="section-divider" />

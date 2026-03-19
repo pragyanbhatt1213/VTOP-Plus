@@ -3,7 +3,14 @@
 import { useRef, useEffect } from 'react';
 import './CircularGallery.css';
 
-export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
+export default function CircularGallery({
+  items = [],
+  bend = 1,
+  textColor = '#ffffff',
+  borderRadius = 0.05,
+  scrollSpeed = 2,
+  scrollEase = 0.05,
+}) {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -13,14 +20,10 @@ export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
     const scroll = { current: 0, target: 0 };
     let dragging = false, startX = 0, dragStart = 0;
 
-    // Mobile aspect ratio: 9:19.5 ≈ 0.456
-    const MOBILE_ASPECT = 0.456;
-    let planeHeight = 0,
-      planeWidth = 0,
-      spacing = 0;
-    
-    // Viewport to convert HTML dimensions to WebGL units
-    let viewport = { width: 0, height: 0 };
+const PW = 1.8;
+      const PH = 3.1;
+      const GAP = 0.5;
+    const SPACING = PW + GAP;
 
     async function boot() {
       const OGL = await import('ogl');
@@ -29,33 +32,25 @@ export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
       const box = containerRef.current;
       if (!box) return;
 
-      // Create renderer
-      const dpr = Math.min(window.devicePixelRatio, 2);
+      /* ── renderer ── */
       renderer = new OGL.Renderer({
-        dpr,
+        dpr: Math.min(window.devicePixelRatio, 2),
         alpha: true,
         antialias: true,
       });
       gl = renderer.gl;
       gl.clearColor(0, 0, 0, 0);
-      
-      gl.canvas.style.position = 'absolute';
-      gl.canvas.style.top = '0';
-      gl.canvas.style.left = '0';
-      gl.canvas.style.width = '100%';
-      gl.canvas.style.height = '100%';
-      
       box.appendChild(gl.canvas);
 
-      // Create camera
-      camera = new OGL.Camera(gl, { fov: 45 });
-      camera.position.z = 8;
+      /* ── camera ── */
+      camera = new OGL.Camera(gl, { fov: 50 });
+      camera.position.z = 5.5;
 
-      // Create scene
+      /* ── scene ── */
       scene = new OGL.Transform();
 
-      // Vertex shader
-      const vertexShader = `
+      /* ── shaders ── */
+      const vertex = /* glsl */ `
         attribute vec3 position;
         attribute vec2 uv;
         uniform mat4 modelViewMatrix;
@@ -67,11 +62,10 @@ export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
         }
       `;
 
-      // Fragment shader with rounded corners
-      const fragmentShader = `
+      const fragment = /* glsl */ `
         precision highp float;
         uniform sampler2D tMap;
-        uniform float uBorderRadius;
+        uniform float uRadius;
         uniform float uAlpha;
         varying vec2 vUv;
 
@@ -81,220 +75,154 @@ export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
         }
 
         void main() {
-          vec2 p = vUv - 0.5;
-          vec2 halfSize = vec2(0.5);
-          float d = sdfRoundedBox(p, halfSize, uBorderRadius);
+          vec2 uv = vUv;
+          float d = sdfRoundedBox(uv - 0.5, vec2(0.5), uRadius);
+          if (d > 0.002) discard;
+
+          // Center the texture with proper aspect ratio handling
+          vec2 centeredUv = uv - 0.5;
+          centeredUv *= 1.1;
+          centeredUv += 0.5;
           
-          vec4 texColor = texture2D(tMap, vUv);
+          // Clamp to prevent edge artifacts
+          centeredUv = clamp(centeredUv, vec2(0.0), vec2(1.0));
           
-          gl_FragColor = vec4(texColor.rgb, texColor.a * uAlpha);
-          
-          // Apply border radius by discarding fragments outside the rounded box
-          if (d > 0.0) gl_FragColor.a = 0.0;
+          vec4 tex = texture2D(tMap, centeredUv);
+          float edge = 1.0 - smoothstep(-0.005, 0.002, d);
+          gl_FragColor = vec4(tex.rgb, tex.a * uAlpha * edge);
         }
       `;
 
-      // Plane geometry
-      const planeGeometry = new OGL.Plane(gl, { width: 1, height: 1 });
+      /* ── meshes ── */
+      const geom = new OGL.Plane(gl, { width: PW, height: PH });
 
-      // Function to resize and recalculate dimensions
-      function updateDimensions() {
-        const { width, height } = box.getBoundingClientRect();
-        renderer.setSize(width, height);
-        camera.perspective({ aspect: width / height });
-
-        // Calculate viewport in WebGL units
-        const fov = (camera.fov * Math.PI) / 180;
-        const fovHeight = 2 * Math.tan(fov / 2) * camera.position.z;
-        const fovWidth = fovHeight * (width / height);
-        viewport = { width: fovWidth, height: fovHeight };
-
-        // Calculate plane dimensions based on mobile aspect ratio in WebGL units
-        planeHeight = fovHeight * 0.7; // Screenshots take up 70% of the viewport height
-        planeWidth = planeHeight * MOBILE_ASPECT;
-        spacing = planeWidth * 0.4; // Gap between planes
-      }
-
-      updateDimensions();
-      window.addEventListener('resize', updateDimensions);
-
-      // Create textures and planes
-      items.forEach((item) => {
-        const texture = new OGL.Texture(gl, {
-          generateMipmaps: true,
-          minFilter: gl.LINEAR_MIPMAP_LINEAR,
-          magFilter: gl.LINEAR,
-        });
-
+      items.forEach((item, i) => {
+        const texture = new OGL.Texture(gl, { generateMipmaps: true });
         const img = new Image();
         img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          texture.image = img;
-          program.uniforms.uImageSizes = { value: [img.width, img.height] };
-          texture.needsUpdate = true;
-        };
+        img.onload = () => { texture.image = img; };
         img.src = item.image;
 
         const program = new OGL.Program(gl, {
-          vertex: vertexShader,
-          fragment: fragmentShader,
+          vertex, fragment,
           uniforms: {
             tMap: { value: texture },
-            uBorderRadius: { value: borderRadius },
+            uRadius: { value: borderRadius },
             uAlpha: { value: 1 },
           },
           transparent: true,
           depthTest: false,
         });
 
-        const mesh = new OGL.Mesh(gl, {
-          geometry: planeGeometry,
-          program,
-        });
+        const mesh = new OGL.Mesh(gl, { geometry: geom, program });
         mesh.setParent(scene);
-        mesh.data = { label: item.text };
-        planes.push(mesh);
+        planes.push({ mesh, program, idx: i });
       });
 
-      // Create labels
-      const labels = items.map((item) => {
-        const label = document.createElement('div');
-        label.className = 'cg-label';
-        label.textContent = item.text;
-        box.appendChild(label);
-        return label;
+      /* ── labels ── */
+      const labels = items.map((item, i) => {
+        const el = document.createElement('div');
+        el.className = 'cg-label';
+        el.style.color = textColor;
+        el.textContent = item.text;
+        box.appendChild(el);
+        return el;
       });
 
-      // Scroll interaction
-      function onWheel(e) {
-        e.preventDefault();
-        // Ultra-slow wheel speed for maximum precision
-        scroll.target += e.deltaY * 0.005;
+      /* ── resize ── */
+      function onResize() {
+        if (!box || !renderer) return;
+        const { width, height } = box.getBoundingClientRect();
+        renderer.setSize(width, height);
+        camera.perspective({ aspect: width / height });
       }
+      onResize();
+      window.addEventListener('resize', onResize);
+
+      /* ── input ── */
+      function onWheel(e) { scroll.target += e.deltaY * scrollSpeed * 0.003; }
 
       function onPointerDown(e) {
         dragging = true;
-        startX = e.clientX || e.touches?.[0]?.clientX || 0;
+        startX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
         dragStart = scroll.target;
         box.style.cursor = 'grabbing';
       }
-
       function onPointerMove(e) {
         if (!dragging) return;
-        const x = e.clientX || e.touches?.[0]?.clientX || 0;
-        // Ultra-slow drag speed
-        scroll.target = dragStart - (x - startX) * 0.03;
+        const x = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+        scroll.target = dragStart - (x - startX) * 0.005 * scrollSpeed;
       }
-
       function onPointerUp() {
         dragging = false;
         box.style.cursor = 'grab';
       }
 
-      // Attach event listeners
-      box.addEventListener('wheel', onWheel, { passive: false });
+      box.addEventListener('wheel', onWheel, { passive: true });
       box.addEventListener('mousedown', onPointerDown);
-      box.addEventListener('touchstart', onPointerDown, { passive: true });
+      box.addEventListener('touchstart', (e) => onPointerDown(e.touches[0] ? e : e), { passive: true });
       window.addEventListener('mousemove', onPointerMove);
-      window.addEventListener('touchmove', onPointerMove, { passive: true });
+      window.addEventListener('touchmove', (e) => onPointerMove(e.touches?.[0] || e), { passive: true });
       window.addEventListener('mouseup', onPointerUp);
       window.addEventListener('touchend', onPointerUp);
       box.style.cursor = 'grab';
 
-      // Render loop
-      let frames = 0;
-      function animate() {
+      /* ── render loop ── */
+      const totalW = items.length * SPACING;
+
+      function tick() {
         if (!alive) return;
-        frames++;
+        scroll.current += (scroll.target - scroll.current) * scrollEase;
 
-        // Smooth scroll implementation with ultra-elegant easing (0.015)
-        scroll.current += (scroll.target - scroll.current) * 0.015;
+        planes.forEach(({ mesh, idx }, i) => {
+          let x = (idx * SPACING - scroll.current) % totalW;
+          if (x < -totalW / 2) x += totalW;
+          if (x > totalW / 2) x -= totalW;
 
-        const { width } = box.getBoundingClientRect();
-        const totalWidth = items.length * (planeWidth + spacing);
+          mesh.position.x = x;
 
-        planes.forEach((mesh, i) => {
-          // Calculate position
-          const xPos = i * (planeWidth + spacing) - scroll.current;
+          const norm = x / (totalW * 0.5);
+          mesh.position.y = -bend * norm * norm * 2.0;
+          mesh.position.z = -Math.abs(norm) * bend * 0.6;
 
-          // Wrap around for infinite scroll
-          const wrappedX =
-            ((xPos % totalWidth) + totalWidth) % totalWidth -
-            totalWidth / 2;
+          mesh.rotation.y = -norm * bend * 0.15;
 
-          mesh.position.x = wrappedX;
-
-          // Curved arc effect: flatten the max distance to make a professional sweeping curve
-          const maxDist = viewport.width * 0.75; 
-          const distFromCenter = Math.abs(wrappedX);
-          const angleRadians = Math.asin(
-            Math.min(distFromCenter / maxDist, 1)
-          );
-
-          // Subtler Y-drop and gentle depth pushback
-          mesh.position.y = -(maxDist - maxDist * Math.cos(angleRadians)) * 0.15;
-          mesh.position.z = -Math.abs(wrappedX) * 0.08; 
-          
-          // Smoother 3D Rotation (reduced tilt)
-          mesh.rotation.z = wrappedX > 0 ? angleRadians * 0.05 : -angleRadians * 0.05;
-          mesh.rotation.y = wrappedX > 0 ? -angleRadians * 0.12 : angleRadians * 0.12;
-
-          // Graceful scaling
-          const scaleAmount = 1 - Math.min(Math.abs(wrappedX) / maxDist, 0.4) * 0.15;
-          mesh.scale.x = planeWidth * scaleAmount;
-          mesh.scale.y = planeHeight * scaleAmount;
-          mesh.scale.z = 1;
-
-          // Smoother opacity fade at edges
-          const opacity = 1 - Math.max(0, Math.abs(wrappedX) - maxDist * 0.5) / (maxDist * 0.45);
-          mesh.program.uniforms.uAlpha.value = Math.max(0, opacity);
-
-          // Position label
+          /* project label position */
           if (labels[i]) {
             const rect = box.getBoundingClientRect();
             const hw = rect.width / 2;
             const hh = rect.height / 2;
 
             const fov = (camera.fov * Math.PI) / 180;
-            const camDist = camera.position.z;
-            const vHeight = 2 * Math.tan(fov / 2) * camDist;
-            const vWidth = vHeight * (rect.width / rect.height);
+            const dist = camera.position.z;
+            const visH = 2 * Math.tan(fov / 2) * dist;
+            const visW = visH * (rect.width / rect.height);
 
-            const screenX = hw + (mesh.position.x / vWidth) * rect.width;
-            const screenY =
-              hh -
-              (mesh.position.y / vHeight) * rect.height +
-              planeHeight * 0.4;
+            const sx = hw + (mesh.position.x / visW) * rect.width;
+            const sy = hh - ((mesh.position.y - PH * 0.58) / visH) * rect.height;
 
-            labels[i].style.transform = `translate(${screenX}px, ${screenY}px) translate(-50%, 0)`;
-            labels[i].style.opacity = Math.max(0, opacity).toString();
+            labels[i].style.transform = `translate(${sx}px, ${sy}px) translate(-50%, 0)`;
+            labels[i].style.opacity = Math.abs(norm) < 0.9 ? '1' : '0';
           }
         });
 
         renderer.render({ scene, camera });
-        raf = requestAnimationFrame(animate);
+        raf = requestAnimationFrame(tick);
       }
-      animate();
+      tick();
 
-      // Cleanup function
-      containerRef.current.cleanup = () => {
-        window.removeEventListener('resize', updateDimensions);
+      /* ── cleanup ref ── */
+      containerRef.current._destroy = () => {
+        window.removeEventListener('resize', onResize);
         box.removeEventListener('wheel', onWheel);
         box.removeEventListener('mousedown', onPointerDown);
-        box.removeEventListener('touchstart', onPointerDown);
         window.removeEventListener('mousemove', onPointerMove);
-        window.removeEventListener('touchmove', onPointerMove);
         window.removeEventListener('mouseup', onPointerUp);
         window.removeEventListener('touchend', onPointerUp);
         cancelAnimationFrame(raf);
         labels.forEach((l) => l.remove());
-        planeGeometry.destroy();
-        planes.forEach((plane) => {
-          plane.program.destroy();
-        });
         gl.getExtension('WEBGL_lose_context')?.loseContext();
-        if (gl.canvas.parentNode)
-          gl.canvas.parentNode.removeChild(gl.canvas);
+        if (gl.canvas.parentNode) gl.canvas.parentNode.removeChild(gl.canvas);
       };
     }
 
@@ -302,11 +230,9 @@ export default function CircularGallery({ items = [], borderRadius = 0.05 }) {
 
     return () => {
       alive = false;
-      containerRef.current?.cleanup?.();
+      containerRef.current?._destroy?.();
     };
-  }, [items, borderRadius]);
+  }, [items, bend, textColor, borderRadius, scrollSpeed, scrollEase]);
 
-  return (
-    <div ref={containerRef} className="cg-container" style={{ position: 'relative' }} />
-  );
+  return <div ref={containerRef} className="cg-container" />;
 }

@@ -59,9 +59,7 @@ export default function Navbar() {
             </a>
           ))}
           <a
-            href="https://github.com/pragyanbhatt1213/VTOP-Plus/releases/download/version/VTOP.Plus.apk"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#download"
             onClick={() => setOpen(false)}
             className="text-accent-cyan text-[13px] font-medium border border-accent-cyan/30 rounded-full px-4 py-1.5 hover:bg-accent-cyan/10 transition-all"
           >

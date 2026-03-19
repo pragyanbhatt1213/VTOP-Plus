@@ -82,13 +82,13 @@ export default function Home() {
       <main className="relative z-10">
         <HeroSection />
         <div className="section-divider" />
+        <PrivacySection />
+        <div className="section-divider" />
         <ProblemSection />
         <div className="section-divider" />
         <FeaturesSection />
         <div className="section-divider" />
         <InterfaceSection />
-        <div className="section-divider" />
-        <PrivacySection />
         <div className="section-divider" />
         <DownloadSection />
       </main>

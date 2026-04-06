@@ -6,6 +6,7 @@ import HeroSection from '@/sections/HeroSection';
 import FeaturesSection from '@/sections/FeaturesSection';
 import InterfaceSection from '@/sections/InterfaceSection';
 import PrivacySection from '@/sections/PrivacySection';
+import WhatsNewSection from '@/sections/WhatsNewSection';
 import DownloadSection from '@/sections/DownloadSection';
 import Footer from '@/components/Footer';
 
@@ -86,6 +87,8 @@ export default function Home() {
         <FeaturesSection />
         <div className="section-divider" />
         <InterfaceSection />
+        <div className="section-divider" />
+        <WhatsNewSection />
         <div className="section-divider" />
         <DownloadSection />
       </main>

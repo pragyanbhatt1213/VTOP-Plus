@@ -42,10 +42,16 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent-cyan/20 bg-accent-cyan/5 text-accent-cyan text-xs font-mono tracking-widest uppercase mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-teal shadow-[0_0_8px_var(--accent-teal)]" />
-            Built for VIT Bhopal Students
+          {/* Badges */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent-cyan/20 bg-accent-cyan/5 text-accent-cyan text-xs font-mono tracking-widest uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-teal shadow-[0_0_8px_var(--accent-teal)]" />
+              Built for VIT Bhopal Students
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent-teal/20 bg-accent-teal/5 text-accent-teal text-xs font-mono tracking-widest uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-teal shadow-[0_0_8px_var(--accent-teal)]" />
+              Now Updated to v1.2
+            </div>
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6">

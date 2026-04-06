@@ -62,7 +62,7 @@ export default function DownloadSection() {
             className="mb-6"
           >
             <a
-              href="https://github.com/pragyanbhatt1213/VTOP-Plus/releases/download/v1.1/VTOP.Plus.v1.1.apk"
+              href="https://github.com/pragyanbhatt1213/VTOP-Plus/releases/download/v1.2/VTOP.Plus.v1.2.apk"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl
